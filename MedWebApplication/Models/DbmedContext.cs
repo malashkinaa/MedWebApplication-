@@ -76,7 +76,7 @@ public partial class DbmedContext : DbContext
         {
             entity.ToTable("Gender");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Name)
                 .HasMaxLength(150)
                 .IsFixedLength();
@@ -101,10 +101,10 @@ public partial class DbmedContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Patient_Patient");
 
-            entity.HasOne(d => d.Gender).WithMany(p => p.Patients)
-                .HasForeignKey(d => d.GenderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Patient_Gender");
+            //entity.HasOne(d => d.Gender).WithMany(p => p.Patients)
+            //    .HasForeignKey(d => d.GenderId)
+            //    .OnDelete(DeleteBehavior.ClientSetNull)
+            //    .HasConstraintName("FK_Patient_Gender");
         });
 
         modelBuilder.Entity<Ward>(entity =>

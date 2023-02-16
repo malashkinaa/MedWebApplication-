@@ -1,4 +1,4 @@
-namespace MedWebApplication.Models
+namespace MedWebApplication
 {
 	public class ErrorViewModel
 	{

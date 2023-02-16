@@ -1,7 +1,15 @@
+using MedWebApplication;
+using Microsoft.EntityFrameworkCore;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<DbmedContext>(option=>option.UseSqlServer(
+	builder.Configuration.GetConnectionString("DefaultConnection")
+	));
 
 var app = builder.Build();
 
@@ -22,6 +30,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
 	name: "default",
-	pattern: "{controller=Home}/{action=Index}/{id?}");
+	pattern: "{controller=Patients}/{action=Index}/{id?}");
 
 app.Run();

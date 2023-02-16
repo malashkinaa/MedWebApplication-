@@ -1,31 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace MedWebApplication;
 
 public partial class Patient
 {
-    public int Id { get; set; }
+	public int Id { get; set; }
 
-    public string Name { get; set; } = null!;
+	[Display(Name = "Ім'я")]
+	public string Name { get; set; } = null!;
+
 
     public int GenderId { get; set; }
 
-    public DateTime BirthDate { get; set; }
+	[Display(Name = "Дата народження")]
+	public DateTime BirthDate { get; set; }
 
     public byte BloodGroupId { get; set; }
 
-    public string Address { get; set; } = null!;
+	[Display(Name = "Адреса")]
+	public string Address { get; set; } = null!;
 
-    public int PhoneNumber { get; set; }
+	[Display(Name = "Номер телефону")]
+	public int PhoneNumber { get; set; }
 
-    public string Email { get; set; } = null!;
+	[Display(Name = "Пошта")]
+	public string Email { get; set; } = null!;
 
-    public string? AnyMajorDiseaseSufferedEarlier { get; set; }
+	[Display(Name = "Попередні хвороби")]
+	public string? AnyMajorDiseaseSufferedEarlier { get; set; }
 
     public virtual ICollection<Appointment> Appointments { get; } = new List<Appointment>();
 
-    public virtual BloodGroup BloodGroup { get; set; } = null!;
+	[Display(Name = "Група крові")]
+	public virtual BloodGroup BloodGroup { get; set; } = null!;
 
-    public virtual Gender Gender { get; set; } = null!;
+	[Display(Name = "Стать")]
+	public virtual Gender Gender { get; set; } = null!;
 }
