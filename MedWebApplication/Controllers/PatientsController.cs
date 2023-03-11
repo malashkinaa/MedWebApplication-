@@ -48,8 +48,8 @@ namespace MedWebApplication.Controllers
         // GET: Patients/Create
         public IActionResult Create()
         {
-            ViewData["BloodGroupId"] = new SelectList(_context.BloodGroups, "Id", "Id");
-            ViewData["GenderId"] = new SelectList(_context.Genders, "Id", "Id");
+            ViewData["BloodGroupId"] = new SelectList(_context.BloodGroups, "Id", "Name");
+            ViewData["GenderId"] = new SelectList(_context.Genders, "Id", "Name");
             return View();
         }
 
@@ -60,14 +60,14 @@ namespace MedWebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,GenderId,BirthDate,BloodGroupId,Address,PhoneNumber,Email,AnyMajorDiseaseSufferedEarlier")] Patient patient)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 _context.Add(patient);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["BloodGroupId"] = new SelectList(_context.BloodGroups, "Id", "Id", patient.BloodGroupId);
-            ViewData["GenderId"] = new SelectList(_context.Genders, "Id", "Id", patient.GenderId);
+            //}
+            ViewData["BloodGroupId"] = new SelectList(_context.BloodGroups, "Id", "Name", patient.BloodGroupId);
+            ViewData["GenderId"] = new SelectList(_context.Genders, "Id", "Name", patient.GenderId);
             return View(patient);
         }
 
@@ -84,8 +84,8 @@ namespace MedWebApplication.Controllers
             {
                 return NotFound();
             }
-            ViewData["BloodGroupId"] = new SelectList(_context.BloodGroups, "Id", "Id", patient.BloodGroupId);
-            ViewData["GenderId"] = new SelectList(_context.Genders, "Id", "Id", patient.GenderId);
+            ViewData["BloodGroupId"] = new SelectList(_context.BloodGroups, "Id", "Name", patient.BloodGroupId);
+            ViewData["GenderId"] = new SelectList(_context.Genders, "Id", "Name", patient.GenderId);
             return View(patient);
         }
 
@@ -101,8 +101,8 @@ namespace MedWebApplication.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 try
                 {
                     _context.Update(patient);
@@ -120,9 +120,9 @@ namespace MedWebApplication.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["BloodGroupId"] = new SelectList(_context.BloodGroups, "Id", "Id", patient.BloodGroupId);
-            ViewData["GenderId"] = new SelectList(_context.Genders, "Id", "Id", patient.GenderId);
+            //}
+            ViewData["BloodGroupId"] = new SelectList(_context.BloodGroups, "Id", "Name", patient.BloodGroupId);
+            ViewData["GenderId"] = new SelectList(_context.Genders, "Id", "Name", patient.GenderId);
             return View(patient);
         }
 

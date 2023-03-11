@@ -12,12 +12,15 @@ public partial class Patient
 	public string Name { get; set; } = null!;
 
 
-    public int GenderId { get; set; }
+	[Display(Name = "Стать")]
+	public int GenderId { get; set; }
 
+	[DataType(DataType.Date)]
 	[Display(Name = "Дата народження")]
 	public DateTime BirthDate { get; set; }
 
-    public byte BloodGroupId { get; set; }
+	[Display(Name = "Група крові")]
+	public byte BloodGroupId { get; set; }
 
 	[Display(Name = "Адреса")]
 	public string Address { get; set; } = null!;
