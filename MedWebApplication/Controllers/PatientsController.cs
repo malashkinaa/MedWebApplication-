@@ -71,8 +71,15 @@ namespace MedWebApplication.Controllers
             return View(patient);
         }
 
-        // GET: Patients/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+		//[HttpPost]
+		//[ValidateAntiForgeryToken]
+		//public async Task<IActionResult> Import(IFormFile fileExcel)
+		//{
+
+		//}
+
+		// GET: Patients/Edit/5
+		public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Patients == null)
             {
