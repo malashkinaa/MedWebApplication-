@@ -9,6 +9,7 @@ using MedWebApplication;
 using ClosedXML.Excel;
 using System.IO;
 using System.Reflection.Metadata.Ecma335;
+using MedWebApplication.ExcelIntegration;
 
 namespace MedWebApplication.Controllers
 {
@@ -80,86 +81,12 @@ namespace MedWebApplication.Controllers
 		{
 			if (fileExcel != null)
 			{
-				using (var stream = new FileStream(fileExcel.FileName, FileMode.Create))
+				ExcelImport i = new ExcelImport(fileExcel, _context.BloodGroups.ToList(), _context.Genders.ToList());
+				var list = i.ProcessFile();
+				foreach(var patient in list)
 				{
-					await fileExcel.CopyToAsync(stream);
-					using (var workBook = new XLWorkbook(stream, XLEventTracking.Disabled))
-					{
-						//перегляд усіх листів (в даному випадку категорій)
-						foreach (var worksheet in workBook.Worksheets)
-						{
-							foreach (var row in worksheet.RowsUsed().Skip(1))
-							{
-
-								var patientName = row.Cell(1).Value.ToString();
-								var birthDate = DateTime.Parse(row.Cell(2).Value.ToString());
-								var adress = row.Cell(3).Value.ToString();
-								var phoneNumber = int.Parse(row.Cell(4).Value.ToString());
-								var email = row.Cell(5).Value.ToString();
-								var anyMajorDiseaseSufferedEarlier = row.Cell(6).Value.ToString();
-								var bloodGroup = row.Cell(7).Value.ToString();
-								var genderName = row.Cell(8).Value.ToString();
-
-								var patient = new Patient { };
-								patient.Name = patientName;
-								patient.BirthDate = birthDate;
-								patient.Address = adress;
-								patient.PhoneNumber = phoneNumber;
-								patient.Email = email;
-								patient.AnyMajorDiseaseSufferedEarlier = anyMajorDiseaseSufferedEarlier;
-								
-
-
-								int genderId = -1;
-								foreach (var g in _context.Genders)
-								{
-									if (g.Name == genderName) 
-									{
-										genderId = g.Id; 
-										break;
-									}	
-								}
-								//int genderId = (from gender in _context.Genders where gender.Name == genderName select gender).FirstOrDefault().Id;
-								//_context.Genders()\							    
-								patient.GenderId = genderId;
-
-
-								byte bloodGroupId = 0;
-								foreach (var b in _context.BloodGroups)
-								{
-									if (b.Name.Trim() == bloodGroup)
-									{ 
-										bloodGroupId = b.Id;
-										break;	
-									}
-								}
-								patient.BloodGroupId = bloodGroupId;
-
-								_context.Add(patient);
-								await _context.SaveChangesAsync();
-
-
-
-							}
-							//							//worksheet.Name - назва категорії. Пробуємо знайти в БД, якщо відсутня, то створюємо нову
-							//							Patient newcat;
-							//							var c = (from cat in _context.Patients)
-							//									 where cat.Name.Contains(worksheet.Name)
-							//									 select cat).ToList();
-							//							if (c.Count & gt; 0)
-							//{
-							//								newcat = c[0];
-							//							}
-							//else
-							//							{
-							//								newcat = new Category();
-							//								newcat.Name = worksheet.Name;
-							//								newcat.Info = &quot; from EXCEL&quot; ;
-							//								//додати в контекст
-							//								_context.Categories.Add(newcat);
-							//							}
-						}
-					}
+					_context.Add(patient);
+					_context.SaveChanges();
 				}
 			}
 			return RedirectToAction(nameof(Index));
@@ -167,74 +94,9 @@ namespace MedWebApplication.Controllers
 
 		public ActionResult Export()
 		{
-			using (XLWorkbook workbook = new XLWorkbook(XLEventTracking.Disabled))
-			{
-				var worksheet = workbook.Worksheets.Add("Пацієнти");
-
-				worksheet.Cell(1, 1).Value = "Ім'я пацієнта";
-				worksheet.Cell(1, 2).Value = "Дата народження";
-				worksheet.Cell(1, 3).Value = "Адреса";
-				worksheet.Cell(1, 4).Value = "Номер телефону";
-				worksheet.Cell(1, 5).Value = "Пошта";
-				worksheet.Cell(1, 6).Value = "Попередні хвороби";
-				worksheet.Cell(1, 7).Value = "Група крові";
-				worksheet.Cell(1, 8).Value = "Стать";
-				worksheet.Row(1).Style.Font.Bold = true;
-
-				var bloodGroups = _context.BloodGroups.ToList();
-				var genders = _context.Genders.ToList();
-				int i = 2; //skip header
-				foreach (var p in _context.Patients)
-				{ 
-					worksheet.Cell(i, 1).Value = p.Name;
-					worksheet.Cell(i, 2).Value = p.BirthDate;
-					worksheet.Cell(i, 3).Value = p.Address;
-					worksheet.Cell(i, 4).Value = p.PhoneNumber;
-					worksheet.Cell(i, 5).Value = p.Email;
-					worksheet.Cell(i, 6).Value = p.AnyMajorDiseaseSufferedEarlier;
-					foreach (var b in bloodGroups)
-					{
-						if (b.Id == p.BloodGroupId)
-						{
-							worksheet.Cell(i, 7).Value = b.Name;
-							break;
-						}
-								
-					}
-					foreach (var g in genders)
-					{
-						if (g.Id == p.GenderId)
-						{
-							worksheet.Cell(i, 8).Value = g.Name;
-							break;
-						}
-					
-					}
-			
-					i++;
-				}
-				
-
-
-				using (var stream = new MemoryStream())
-				{ 
-					workbook.SaveAs(stream);
-					stream.Flush();
-
-					return new FileContentResult(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-					{
-						FileDownloadName = $"patients_{DateTime.UtcNow.ToShortDateString()}.xlsx"
-					};
-				}
-
-			}
-
-			
-
-
+			ExcelExport e = new ExcelExport(_context);
+			return e.ProcessFile();
 		}
-
-
 
 		// GET: Patients/Edit/5
 		public async Task<IActionResult> Edit(int? id)
